@@ -2,7 +2,6 @@ import os
 import streamlit as st
 from dotenv import load_dotenv
 import httpx
-import time
 
 # Try to load environment variables
 load_dotenv()
@@ -83,6 +82,11 @@ def init_session_state():
     if 'messages' not in st.session_state:
         st.session_state.messages = []
 
+# Function to clear chat history
+def clear_chat():
+    st.session_state.conversation_history = []
+    st.session_state.messages = []
+
 def main():
     st.title("Chatbot (Made by Shahriyar Khan)")
     st.write("Welcome to the chatbot. Please type a message and press Enter to start the conversation.")
@@ -90,11 +94,8 @@ def main():
     # Initialize session state
     init_session_state()
     
-    # Add a button to clear chat history
-    if st.sidebar.button("Clear Conversation"):
-        st.session_state.conversation_history = []
-        st.session_state.messages = []
-        st.experimental_rerun()
+    # Add a button to clear chat history (without rerun)
+    st.sidebar.button("Clear Conversation", on_click=clear_chat)
     
     # Display chat history
     for message in st.session_state.messages:
@@ -123,8 +124,6 @@ def main():
         st.session_state.messages.append({"role": "assistant", "content": response})
         with st.chat_message("assistant"):
             st.markdown(response)
-        
-        # No need for the goodbye check since it's handled by the LLM via system prompt
 
 if __name__ == '__main__':
     main()
